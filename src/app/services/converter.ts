@@ -10,37 +10,27 @@ export class Converter {
   public toDecimal(algarismos: string): number {
     algarismos = algarismos.toUpperCase();
     let total = 0;
-    for (let i = 0; i < algarismos.length; i++) {
-      if (algarismos.charAt(i) === "_"
-        && i + 3 < algarismos.length
-        && algarismos.charAt(i + 2) === "_") {
-        const pair = algarismos.charAt(i) + algarismos.charAt(i + 1);
-        const lookaheadPair = algarismos.charAt(i + 2) + algarismos.charAt(i + 3);
-        const currentValue = ROMAN_DECIMAL_MAP.get(pair) ?? 0;
-        const nextValue = ROMAN_DECIMAL_MAP.get(lookaheadPair) ?? 0;
-        if (nextValue > currentValue) {
-          total += (nextValue - currentValue);
-          i = i + 3;
-        } else {
-          total += currentValue;
-          i = i + 1;
-        }
-      } else if (algarismos.charAt(i) === "_") {
-        const pair = algarismos.charAt(i) + algarismos.charAt(i + 1);
-        const currentValue = ROMAN_DECIMAL_MAP.get(pair) ?? 0;
-        total += currentValue;
-        i = i + 1;
-      } else {
-        const currentValue = ROMAN_DECIMAL_MAP.get(algarismos.charAt(i)) ?? 0;
-        const nextValue = (i + 1 < algarismos.length) ? ROMAN_DECIMAL_MAP.get(algarismos.charAt(i + 1)) ?? 0 : 0;
-        if (nextValue > currentValue) {
-          total += (nextValue - currentValue);
-          i++;
-        } else {
-          total += currentValue;
-        }
-      }
+    let indiceCaractereAtual = 0;
+    while (indiceCaractereAtual < algarismos.length) {
+      let vinculumPair: boolean = algarismos.charAt(indiceCaractereAtual) === '_'
+        && indiceCaractereAtual + 3 < algarismos.length
+        && algarismos.charAt(indiceCaractereAtual + 2) === '_'
+        && ROMAN_DECIMAL_MAP.has(algarismos.substring(indiceCaractereAtual, indiceCaractereAtual + 4));
+
+      let vinculumSingle__NormalPair: boolean = algarismos.charAt(indiceCaractereAtual) == '_'
+        || indiceCaractereAtual + 1 < algarismos.length
+        && ROMAN_DECIMAL_MAP.has(algarismos.substring(indiceCaractereAtual, indiceCaractereAtual + 2));
+
+      let key: string = vinculumPair
+        ? algarismos.substring(indiceCaractereAtual, indiceCaractereAtual + 4)
+        : vinculumSingle__NormalPair
+          ? algarismos.substring(indiceCaractereAtual, indiceCaractereAtual + 2)
+          : algarismos.substring(indiceCaractereAtual, indiceCaractereAtual + 1);
+
+      indiceCaractereAtual += key.length;
+      total += ROMAN_DECIMAL_MAP.get(key)!;
     }
+
     return total;
   }
 
